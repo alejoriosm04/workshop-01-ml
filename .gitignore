@@ -1,0 +1,10 @@
+# Datos descargados desde Kaggle: se reproducen desde data/README.md y no se versionan.
+data/raw/
+data/processed/
+
+# Archivos locales de Jupyter y Python.
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.venv/
+
