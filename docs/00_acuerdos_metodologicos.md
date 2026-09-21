@@ -5,6 +5,47 @@ Esta es la fuente única de decisiones compartidas. Se fundamenta en
 logística y en los notebooks de KNN + Pipeline, regresión lineal y regresión
 logística vistos en clase.
 
+## Reparto por etapas y contratos de entrega
+
+El equipo trabaja por etapas que cruzan ambos notebooks: cada persona domina su
+etapa en Uber y en Thyroid, lo que además permite escribir una fase 9 informada.
+
+| Etapa | Fases | Responsable | Qué entrega a la siguiente |
+| --- | --- | --- | --- |
+| Datos y pipelines | 1–2 | Persona A | Contrato A→B |
+| Modelado y diagnóstico | 3–5 | Persona B | Contrato B→C |
+| Generalización | 6–8 | Persona C | Contrato C→equipo |
+| Conclusiones | 9 | Las tres, por especialidad | Párrafo + subplot 2×2 |
+
+### Contrato A→B: datos listos para modelar
+
+- `X_train`, `X_val`, `X_test`, `y_train`, `y_val`, `y_test` con 70/15/15 y `RANDOM_STATE = 42`.
+- Listas definitivas `numeric_cols` y `categorical_cols` por dataset.
+- Pipeline de preprocesamiento probado con un modelo dummy y evidencia de que no hay fuga.
+- Registro de filas y columnas excluidas con cantidad y motivo.
+
+### Contrato B→C: modelo elegido
+
+- Tabla de métricas train/validation de los 3 modelos de cada problema.
+- Nombre del modelo ganador y justificación de trade-offs.
+- Pipelines base reproducibles con sus hiperparámetros iniciales.
+
+### Contrato C→equipo: resultado final
+
+- `best_params_` y modelo reentrenado de cada problema.
+- Tabla de test final y comparación contra validación.
+- Predicciones e interpretación de las muestras inventadas.
+
+### Aporte de cada persona a la fase 9
+
+- Persona A: limpieza más determinante, calidad de datos y limitaciones de cada dataset.
+- Persona B: KNN vs. regularización, escala, sesgo-varianza y over/underfitting.
+- Persona C: validación cruzada, optimización, consistencia validación–test y preguntas abiertas.
+- El integrador compila el subplot 2×2 con la gráfica más importante de cada etapa.
+
+Regla de convivencia: no se edita la etapa de otra persona sin coordinarla con su
+responsable; cualquier cambio de interfaz se anuncia al grupo.
+
 ## Reglas no negociables
 
 1. Usar `RANDOM_STATE = 42` en divisiones, validación cruzada y búsquedas.

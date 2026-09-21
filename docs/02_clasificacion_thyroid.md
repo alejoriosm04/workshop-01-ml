@@ -1,4 +1,8 @@
-# 02 — Guía de Persona B: clasificación de recurrencia tiroidea
+# 02 — Guía de clasificación: recurrencia tiroidea
+
+Aplica a las tres personas según la etapa: fases 1–2 → Persona A, fases 3–5 →
+Persona B, fases 6–8 → Persona C, fase 9 → las tres. El reparto completo y los
+contratos de entrega están en `docs/00_acuerdos_metodologicos.md`.
 
 Fuente: <https://www.kaggle.com/datasets/jainaru/thyroid-disease-data/data>.
 
