@@ -16,11 +16,14 @@ Archivo: `data/raw/uber/uber.csv`.
 | Target | `fare_amount` | Problema de regresión: tarifa continua en USD. |
 | `Unnamed: 0` | 200.000 valores únicos | Excluir de `X`: índice heredado, no atributo del viaje. |
 | `key` | Solo 3.600 valores únicos | Excluir de `X`: identificador truncado/no predictivo; no representa una característica del viaje. |
-| Nulos | 1 en `dropoff_longitude` y 1 en `dropoff_latitude` | Quedan cubiertos por el imputador; revisar si pertenecen a la misma fila. |
+| Nulos | 1 en `dropoff_longitude` y 1 en `dropoff_latitude`, ambas en la fila 87946 | Es la misma fila: destino desconocido y `passenger_count = 0`. Sin destino no hay distancia ni validación geográfica posible, así que la fila se excluye con el filtro geográfico en lugar de inventar un destino o una distancia. Las `passenger_count` inválidas (710) sí pasan a `NaN` y las rellena el imputador categórico (moda = 1). |
 | Duplicados exactos | 0 | Reportar explícitamente que no se eliminaron filas duplicadas. |
 | `fare_amount <= 0` | 22 filas: 17 negativas y 5 en cero | Excluir solo estas filas: una tarifa negativa o cero no es un precio válido para el target. Reportar la cantidad. |
-| `passenger_count` inválido | 709 ceros y 1 valor mayor que 6 | Convertir esos 710 valores a `NaN` y dejar que el imputador de mediana del pipeline los trate. |
+| `passenger_count` inválido | 709 ceros y 1 valor mayor que 6 | Convertir esos 710 valores a `NaN` y dejar que el imputador categórico del pipeline los trate. En los datos limpios quedan 687 (0,35 %) porque el resto cayó en filas excluidas. |
 | Coordenadas fuera del área de estudio | 4.371 filas (2,186 %) usando caja amplia NYC | Excluir con justificación tras visualizar el mapa: son errores de captura, no viajes largos plausibles. |
+| Tarifas incompatibles con la distancia | 20 filas con `fare_amount > 100` y `trip_distance_km < 1` (hasta 499 USD por 0,8 m) | Excluir: >100 USD/km es físicamente imposible incluso con *surge*. Se conservan las tarifas altas coherentes con trayectos largos (15–35 km). Regla explícita y verificable. |
+
+Total de filas excluidas: **4.410 (2,205 %)**: 22 tarifas ≤ 0 + 4.368 fuera de la caja NYC + 20 tarifas incompatibles. El conjunto limpio queda en **195.590 filas**.
 
 La caja geográfica propuesta es longitud `[-74.3, -73.6]` y latitud `[40.4, 41.0]`;
 es suficientemente amplia para el área urbana y aeropuertos. Antes de aplicarla,
@@ -54,15 +57,21 @@ categorical_cols = ["passenger_count", "hour", "day_of_week", "month", "year"]
 
 ### Outliers: dos variables exigidas
 
-Sobre los datos originales, el reporte IQR arroja:
+Tras la limpieza de la tabla anterior, el reporte IQR arroja:
 
 | Variable | Q1 | Q3 | Límite superior | Outliers | Decisión |
 | --- | ---: | ---: | ---: | ---: | --- |
-| `fare_amount` | 6,00 | 12,50 | 22,25 | 17.167 (8,583 %) | Conservar tarifas positivas altas: pueden corresponder a trayectos largos. |
-| `trip_distance_km`* | 1,256 | 3,906 | 7,880 | 16.156 (8,258 %) | Conservar: trayectos largos son plausibles. |
+| `fare_amount` | 6,00 | 12,50 | 22,25 | 16.661 (8,518 %) | Conservar: su distancia mediana es 10,43 km frente a 1,99 km en el resto, así que son trayectos largos plausibles. Las 20 combinaciones imposibles ya se excluyeron por regla propia (tabla de perfil). |
+| `trip_distance_km`* | 1,257 | 3,906 | 7,881 | 16.153 (8,259 %) | Conservar: trayectos largos son plausibles. |
 
 \*Distancia calculada tras filtrar coordenadas inválidas; su máximo observado fue
 36,69 km. No eliminar por IQR: IQR marca rareza estadística, no error de captura.
+Para referencia, sobre el archivo original el IQR de `fare_amount` marcaba 17.167
+outliers (8,583 %).
+
+Anomalías residuales documentadas sin eliminar: 1.963 viajes con distancia 0,00 km
+(1,00 %) y 3 tarifas por debajo del mínimo de 2,50 USD. No superan el umbral IQR ni
+existe una regla de dominio tan concluyente como la de las tarifas >100 USD/km.
 
 Como la distancia conserva una proporción relevante de outliers plausibles, usar
 `RobustScaler` para `trip_distance_km`. Esta es una excepción justificada al
