@@ -111,9 +111,12 @@ Usar el pipeline común con `StandardScaler` para `Age`. Los tres modelos inicia
 
 ```python
 KNeighborsClassifier(n_neighbors=5, p=2)
-LogisticRegression(penalty="l2", solver="liblinear", class_weight="balanced", max_iter=5_000)
-LogisticRegression(penalty="l1", solver="liblinear", class_weight="balanced", max_iter=5_000)
+LogisticRegression(l1_ratio=0.0, solver="liblinear", class_weight="balanced", max_iter=5_000)
+LogisticRegression(l1_ratio=1.0, solver="liblinear", class_weight="balanced", max_iter=5_000)
 ```
+
+Con la versión de scikit-learn fijada por el proyecto, `l1_ratio=0.0` corresponde a
+regularización L2 y `l1_ratio=1.0` a regularización L1.
 
 `class_weight="balanced"` está justificado por el desbalance moderado y por la
 prioridad del caso de recurrencia; la clase menciona pesos como alternativa al

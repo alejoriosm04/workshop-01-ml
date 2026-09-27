@@ -51,7 +51,9 @@ un requisito de `workshop1.md`.
 - [ ] Fase 9 compara KNN, regularización L1/L2, escala, sesgo-varianza y limitaciones.
 - [ ] Cada notebook tiene un subplot 2×2 con sus gráficas más importantes.
 - [ ] La fase 9 incluye el aporte de las tres especialidades: datos (A), modelado (B) y optimización (C).
-- [ ] Persona B revisó las fases 1–2, Persona C las fases 3–5 y Persona A las fases 6–8.
+- [x] Persona B revisó las fases 1–2 de ambos notebooks.
+- [ ] Persona C revisó las fases 3–5 de ambos notebooks.
+- [ ] Persona A revisó las fases 6–8 de ambos notebooks.
 - [ ] Cada persona puede explicar y defender las secciones de su etapa.
 - [ ] Se declaran las limitaciones específicas: calidad de coordenadas en Uber; tamaño, desbalance y temporalidad en Thyroid.
 - [ ] Los notebooks corren desde cero y no contienen rutas personales ni errores.
