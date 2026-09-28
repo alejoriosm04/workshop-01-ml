@@ -4,4 +4,5 @@ matplotlib
 seaborn
 scikit-learn>=1.8,<1.10
 scipy
+jinja2
 jupyter
