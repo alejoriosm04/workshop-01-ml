@@ -1,59 +1,70 @@
-# Workshop 01 — Pipelines, regresión y clasificación
+# Taller 1: Pipelines, regresión y clasificación
 
-Este repositorio contiene dos notebooks autónomos, construidos a partir de
-`workshop1.md`, el material de clase en `Machine_Learning_Applied` y los CSV
-originales descargados de Kaggle.
+Machine Learning Applied
 
-| Notebook | Dataset | Target |
-| --- | --- | --- |
-| `notebooks/01_regresion_uber.ipynb` | Uber Ride Price Prediction | `fare_amount` |
-| `notebooks/02_clasificacion_thyroid.ipynb` | Thyroid Disease Data | `Recurred` (`Yes` = 1) |
+**Integrantes:** Alejandro Rios, Lina Ballesteros y Danna Salazar
 
-## Reparto del equipo (3 personas)
+Este repositorio contiene la solución del Taller 1 (enunciado en [`workshop1.md`](workshop1.md)). Se resuelven dos problemas de aprendizaje supervisado siguiendo el ciclo completo: EDA y limpieza, división train/validation/test, pipelines con `ColumnTransformer`, comparación de modelos, evaluación en test, validación cruzada con `RandomizedSearchCV`, predicción sobre una muestra inventada y conclusiones. Cada decisión está justificada en celdas Markdown dentro de los notebooks.
 
-La división es por etapa técnica y cada persona aporta a **ambos notebooks**. Así
-nadie es dueño exclusivo de un notebook y la tercera persona no queda limitada a
-reunir conclusiones.
+## Notebooks
 
-| Persona | Rol | Fases | Aporte en regresión | Aporte en clasificación |
-| --- | --- | --- | --- | --- |
-| Persona A | Datos y preprocesamiento | 1–2 | EDA, limpieza, split y pipeline de Uber | EDA, limpieza, split y pipeline de Thyroid |
-| Persona B | Modelado base y diagnóstico | 3–5 | KNN/Ridge/Lasso, métricas train–val, selección | KNN/logística L1/L2, métricas train–val, selección |
-| Persona C | Generalización y optimización | 6–8 | Test, K-Fold, búsqueda, muestra inventada | Test, K-Fold, búsqueda, muestra inventada |
-| Las tres | Conclusiones | 9 | Aporte por especialidad + subplot 2×2 | Aporte por especialidad + subplot 2×2 |
+| Notebook | Problema | Dataset | Target |
+| --- | --- | --- | --- |
+| [`01_regresion_uber.ipynb`](notebooks/01_regresion_uber.ipynb) | Regresión | [Uber Ride Price Prediction](https://www.kaggle.com/datasets/kushsheth/uber-ride-price-prediction) | `fare_amount` (tarifa en USD) |
+| [`02_clasificacion_thyroid.ipynb`](notebooks/02_clasificacion_thyroid.ipynb) | Clasificación | [Thyroid Disease Data](https://www.kaggle.com/datasets/jainaru/thyroid-disease-data/data) | `Recurred` (recurrencia del cáncer, `Yes` = 1) |
 
-Cada etapa entrega un contrato explícito a la siguiente, definido en
-[Acuerdos metodológicos comunes](docs/00_acuerdos_metodologicos.md). Respetar esos
-contratos permite trabajar en paralelo sin rehacer trabajo ajeno.
+Cada notebook está organizado por las fases del enunciado (1 a 9) y se entrega ejecutado, con todas sus tablas y gráficas.
 
-### Integración y revisión cruzada
+## Resumen de resultados
 
-| Responsabilidad | Persona |
-| --- | --- |
-| Compilar la fase 9 de regresión | Persona A |
-| Compilar la fase 9 de clasificación | Persona B |
-| Ejecutar ambos notebooks desde cero y cerrar el checklist | Persona C |
-| Revisar las fases 1–2 de ambos notebooks | Persona B |
-| Revisar las fases 3–5 de ambos notebooks | Persona C |
-| Revisar las fases 6–8 de ambos notebooks | Persona A |
+### Regresión: tarifa de viajes de Uber
 
-## Orden de trabajo
+- Limpieza principal: se excluyeron 4.410 filas (2,2 %) con tarifas no positivas, coordenadas fuera de Nueva York o combinaciones imposibles de tarifa y distancia. La distancia del viaje se calculó con la fórmula de Haversine y se derivaron hora, día, mes y año.
+- Modelos comparados: KNN Regressor, Ridge y Lasso.
+- Modelo seleccionado: Ridge. En test obtuvo un MAE de 2,22 USD y un R² de 0,79. KNN mostró sobreajuste (su MAE sube 26 % de train a validación).
+- Optimización: con `RandomizedSearchCV` y 5-Fold se eligió alpha ≈ 658. La mejora fue marginal (MAE de 2,21 USD en test).
 
-1. Lean y acuerden `docs/00_acuerdos_metodologicos.md` antes de modificar los notebooks.
-2. Persona A publica splits, columnas y pipelines: es la ruta crítica.
-3. B y C adelantan su código contra las interfaces acordadas mientras A termina.
-4. Persona B anuncia el modelo ganador de cada problema; solo entonces C lanza las búsquedas.
-5. La fase 9 se escribe a tres manos por especialidad; cada integrador la compila.
-6. Cada revisor valida su etapa antes de la ejecución final desde cero.
+### Clasificación: recurrencia de cáncer tiroideo
 
-La guía de trabajo está en:
+- Limpieza principal: se eliminaron 19 duplicados exactos y se excluyó la variable `Response`, porque se conoce después del tratamiento y anticipa el resultado.
+- Modelos comparados: KNN Classifier, regresión logística L2 y regresión logística L1.
+- Métrica prioritaria: Recall, porque no detectar una recurrencia (falso negativo) es el error más costoso.
+- Modelo seleccionado: regresión logística L2. En test detectó 15 de 16 recurrencias (Recall 0,94).
+- Optimización: la búsqueda de C con `RandomizedSearchCV` y 5-Fold estratificado no mostró una mejora clara. Con C ≈ 0,013, el Recall en test fue 0,81 y la Precision 0,87. Con solo 55 pacientes en test, estas diferencias son orientativas.
 
-- [Acuerdos metodológicos comunes](docs/00_acuerdos_metodologicos.md)
-- [Guía de regresión: Uber](docs/01_regresion_uber.md)
-- [Guía de clasificación: Thyroid](docs/02_clasificacion_thyroid.md)
-- [Checklist de entrega](docs/03_checklist_entrega.md)
-- [Instrucciones de datos](data/README.md)
+## Estructura del repositorio
 
-Los datos locales están ignorados por Git para evitar subir los archivos descargados.
-El repositorio sí debe incluir los dos notebooks ejecutados, las celdas Markdown de
-justificación y esta documentación.
+```text
+.
+├── README.md
+├── workshop1.md                  # Enunciado del taller
+├── requirements.txt
+├── data/
+│   └── README.md                 # Instrucciones para descargar los datos
+└── notebooks/
+    ├── 01_regresion_uber.ipynb
+    └── 02_clasificacion_thyroid.ipynb
+```
+
+## Cómo ejecutar
+
+1. Usar Python 3.11 o superior (scikit-learn 1.8 o superior lo requiere). Los notebooks se ejecutaron con Python 3.14 y scikit-learn 1.9.
+
+2. Crear el entorno e instalar las dependencias:
+
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate        # En Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. Descargar los datos de Kaggle y ubicarlos así (ver [`data/README.md`](data/README.md)):
+
+   ```text
+   data/raw/uber/uber.csv
+   data/raw/thyroid/Thyroid_Diff.csv
+   ```
+
+4. Abrir los notebooks con Jupyter o VS Code y ejecutar todas las celdas en orden. Los notebooks encuentran los datos tanto si se abren desde la raíz del repositorio como desde la carpeta `notebooks/`. El de Uber tarda unos minutos por la predicción de KNN.
+
+Los datos no se incluyen en el repositorio. Toda la limpieza se hace en memoria dentro de los notebooks, sin modificar los archivos originales.
